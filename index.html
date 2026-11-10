@@ -292,7 +292,8 @@ body.past .hav { width: 38px; opacity: 1; margin-right: 10px; border-width: 2px;
 .track2 img { height: 54px; width: auto; max-width: 240px; object-fit: contain; display: block; }
 .track2 li.full { padding: 0; border: 0; overflow: hidden; background: transparent; }
 .track2 li.full img { height: 76px; }
-@keyframes marq { to { transform: translateX(calc(-50% - 10px)); } }
+@keyframes marq { to { transform: translateX(var(--shift, calc(-50% - 10px))); } }
+.track2 { will-change: transform; }
 @media (prefers-reduced-motion: reduce) { .track2 { animation: none; flex-wrap: wrap; width: auto; justify-content: center; padding-inline: 16px; } .track2 li[aria-hidden] { display: none; } .marq { -webkit-mask-image: none; mask-image: none; } }
 .myths { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 36px; }
 .myth { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 26px; min-width: 0; }
@@ -681,6 +682,34 @@ body.past .hav { width: 38px; opacity: 1; margin-right: 10px; border-width: 2px;
       trail.addEventListener('mouseenter', stopT); trail.addEventListener('mouseleave', startT);
       new IntersectionObserver(function (e) { on = e[0].isIntersecting; startT(); }, { threshold: 0.4 }).observe($('#proof'));
     }
+  })();
+
+  /* Insurer logos: fill the whole width with copies of the set and loop by exactly one set, so no gap shows on wide screens */
+  (function () {
+    var track = document.querySelector('.track2');
+    if (!track) return;
+    var base = Array.prototype.filter.call(track.children, function (li) { return !li.hasAttribute('aria-hidden'); });
+    var n = base.length, lastW = 0;
+    function build() {
+      var vw = window.innerWidth;
+      if (Math.abs(vw - lastW) < 40 && lastW) return;
+      lastW = vw;
+      Array.prototype.slice.call(track.children, n).forEach(function (li) { track.removeChild(li); });
+      var setW = 0, copies = 1;
+      function addCopy() {
+        base.forEach(function (li) { var c = li.cloneNode(true); c.setAttribute('aria-hidden', 'true'); var im = c.querySelector('img'); if (im) im.alt = ''; track.appendChild(c); });
+        copies++;
+      }
+      addCopy();
+      setW = track.children[n].offsetLeft - track.children[0].offsetLeft;
+      if (!setW) return;
+      while ((copies - 1) * setW < vw + 40) addCopy();
+      track.style.setProperty('--shift', (-setW) + 'px');
+      track.style.animationDuration = Math.round(setW / 40) + 's';
+    }
+    function go() { build(); }
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go);
+    var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 200); });
   })();
 
   /* Modal */
