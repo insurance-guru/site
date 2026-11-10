@@ -445,7 +445,7 @@ body.past .hav { width: 38px; opacity: 1; margin-right: 10px; border-width: 2px;
   </div>
 </section>
 
-<section id="proof" hidden>
+<section id="testimonials" hidden>
   <div class="wrap proof-head">
     <div><p class="eyebrow">Client Testimonials</p><h2>Don't just take my word for it,<br><span style="color:var(--muted)">read what my clients say</span></h2></div>
     <div class="car-ctl tctl">
@@ -671,7 +671,8 @@ body.past .hav { width: 38px; opacity: 1; margin-right: 10px; border-width: 2px;
     trail.innerHTML = TESTIMONIALS.map(function (t) {
       return '<figure class="tcard" style="margin:0">' + (t.sample ? '<span class="smp">Sample</span>' : '') + '<span class="qm" aria-hidden="true">\u201C</span><q>' + t.q + '</q><figcaption><span class="ini" aria-hidden="true">' + t.name.charAt(0) + '</span><span><b>' + t.name + '</b><small>' + t.role + '</small></span></figcaption></figure>';
     }).join('');
-    $('#proof').removeAttribute('hidden');
+    $('#testimonials').removeAttribute('hidden');
+    if (location.hash === '#testimonials') $('#testimonials').scrollIntoView();
     function go(d) { trail.scrollBy({ left: d * (trail.children[0].getBoundingClientRect().width + 16), behavior: 'smooth' }); }
     $('#tprev').addEventListener('click', function () { go(-1); });
     $('#tnext').addEventListener('click', function () { go(1); });
@@ -683,7 +684,7 @@ body.past .hav { width: 38px; opacity: 1; margin-right: 10px; border-width: 2px;
       ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (ev) { trail.addEventListener(ev, function () { seen = true; stopT(); }, { passive: true }); });
       $('#tprev').addEventListener('click', function () { seen = true; stopT(); }); $('#tnext').addEventListener('click', function () { seen = true; stopT(); });
       trail.addEventListener('mouseenter', stopT); trail.addEventListener('mouseleave', startT);
-      new IntersectionObserver(function (e) { on = e[0].isIntersecting; startT(); }, { threshold: 0.4 }).observe($('#proof'));
+      new IntersectionObserver(function (e) { on = e[0].isIntersecting; startT(); }, { threshold: 0.4 }).observe($('#testimonials'));
     }
   })();
 
